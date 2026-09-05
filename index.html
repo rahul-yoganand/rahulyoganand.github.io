@@ -59,7 +59,7 @@ input,textarea,select,button{font:inherit}
 <main id="top" style="max-width:1180px;margin:0 auto;padding:0 clamp(16px,4vw,40px)">
 
 <!-- HERO -->
-<section data-screen-label="Hero" style="min-height:calc(100vh - 60px);display:grid;grid-template-rows:1fr auto;padding:clamp(48px,8vh,96px) 0 32px">
+<section data-screen-label="Hero" style="min-height:calc(100vh - 60px);display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:1fr auto;padding:clamp(48px,8vh,96px) 0 32px">
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:32px 48px;align-items:end">
     <div style="grid-column:1/-1">
       <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#55605C;display:flex;gap:18px;flex-wrap:wrap;transition:opacity .7s ease,transform .7s ease;opacity:{{ h1o }};transform:{{ h1t }}">
@@ -129,11 +129,16 @@ input,textarea,select,button{font:inherit}
     <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#55605C;line-height:1.8"><div>ENTRY 03</div><div>CASE FILES</div><div style="margin-top:8px;color:#C9CEC8">— — — —</div></div>
     <h2 style="font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-0.025em;font-weight:700;margin:0;max-width:24ch;text-wrap:balance">Problem, approach, what changed.</h2>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px;perspective:1400px">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:20px;perspective:1400px">
     <sc-for list="{{ projects }}" as="p" hint-placeholder-count="3">
       <article onMouseMove="{{ p.onMove }}" onMouseLeave="{{ p.onLeave }}" tabindex="0" style="background:#F4F5F2;border:1px solid #17201E;border-radius:3px;padding:26px 24px 24px;display:flex;flex-direction:column;gap:18px;transform-style:preserve-3d;transition:transform .18s ease-out,box-shadow .3s ease;transform:{{ p.transform }};box-shadow:{{ p.shadow }};outline:none" style-focus="outline:2px solid #2B5A9E;outline-offset:3px">
         <div style="display:flex;justify-content:space-between;align-items:baseline;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.06em;color:#55605C"><span>FILE {{ p.no }}</span><span>{{ p.where }}</span></div>
-        <h3 style="font-size:clamp(22px,2vw,26px);line-height:1.15;letter-spacing:-0.02em;font-weight:700;margin:0;text-wrap:balance">{{ p.title }}</h3>
+        <h3 style="font-size:clamp(22px,2vw,26px);line-height:1.15;letter-spacing:-0.02em;font-weight:700;margin:0;text-wrap:balance">
+          <sc-if value="{{ p.hasLink }}" hint-placeholder-val="{{ false }}">
+            <a href="{{ p.link }}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;background-image:linear-gradient(#2B5A9E,#2B5A9E);background-position:0 100%;background-repeat:no-repeat;background-size:100% 1px" style-hover="color:#2B5A9E">{{ p.title }} ↗</a>
+          </sc-if>
+          <sc-if value="{{ p.noLink }}" hint-placeholder-val="{{ true }}">{{ p.title }}</sc-if>
+        </h3>
         <dl style="margin:0;display:grid;gap:14px;font-size:15px;line-height:1.5;color:#2A3431">
           <div><dt style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;color:#55605C;margin-bottom:4px">PROBLEM</dt><dd style="margin:0">{{ p.problem }}</dd></div>
           <div><dt style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;color:#55605C;margin-bottom:4px">APPROACH</dt><dd style="margin:0">{{ p.approach }}</dd></div>
@@ -246,7 +251,7 @@ input,textarea,select,button{font:inherit}
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;heroAnimation&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;iris&quot;,&quot;none&quot;],&quot;default&quot;:&quot;iris&quot;,&quot;tsType&quot;:&quot;'iris'|'none'&quot;,&quot;section&quot;:&quot;Motion&quot;},&quot;irisDuration&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1400,&quot;min&quot;:600,&quot;max&quot;:3000,&quot;step&quot;:100,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Motion&quot;},&quot;filmGrain&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Texture&quot;},&quot;scrollRail&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Navigation&quot;}}">
 class Component extends DCLogic {
-  state = { iris: 0, irisDone: false, hero: 0, progress: 0, dot: {x:28,y:0}, narrow: false, tilts: {}, hoverFrame: -1, lamp: 0, logoClicks: 0, form: {name:'',email:'',reason:'Hiring',message:''} };
+  state = { iris: 0, irisDone: false, hero: 0, progress: 0, dot: {x:28,y:0}, narrow: typeof window !== 'undefined' && window.innerWidth < 760, wide: typeof window !== 'undefined' && window.innerWidth >= 1340, tilts: {}, hoverFrame: -1, lamp: 0, logoClicks: 0, form: {name:'',email:'',reason:'Hiring',message:''} };
   railPath = React.createRef(); nameWrap = React.createRef(); nameEl = React.createRef();
   componentDidMount() {
     console.log('%c▲ FIELD JOURNAL v1.0', 'font:bold 14px monospace;color:#2B5A9E');
@@ -323,7 +328,7 @@ class Component extends DCLogic {
         'First production Android work, in Kotlin. Learned what "it works on my device" costs.' ] }
     ];
     const projData = [
-      { no: '01', where: 'SIDE PROJECT', title: 'whencaniretire.in — a retirement calculator that models real portfolios', problem: 'Retirement calculators use one flat return rate, ignoring that FDs, mutual funds and stocks grow differently.', approach: 'Built whencaniretire.in to model each asset separately, solve for time-to-target or required extra savings, and compute a FIRE number — with a crash simulator and inflation-adjusted projections.', stack: 'Flutter · Dart', metric: 'FIRE #', metricLabel: 'target net worth, solved from your own savings mix' },
+      { no: '01', where: 'SIDE PROJECT', link: 'https://whencaniretire.in', title: 'whencaniretire.in — a retirement calculator that models real portfolios', problem: 'Retirement calculators use one flat return rate, ignoring that FDs, mutual funds and stocks grow differently.', approach: 'Built whencaniretire.in to model each asset separately, solve for time-to-target or required extra savings, and compute a FIRE number — with a crash simulator and inflation-adjusted projections.', stack: 'Flutter · Dart', metric: 'FIRE #', metricLabel: 'target net worth, solved from your own savings mix' },
       { no: '02', where: 'PAYZLI', title: 'Card tokenization that keeps PANs out of the building', problem: 'Storing and reusing customer cards on a multi-tenant platform without ever holding raw card data.', approach: 'Integrated Visa Token Management System with the Cybersource SDK; tokens issued at capture, raw PAN never touches our stores. Boundaries drawn with DDD so the payment context is isolated from everything else.', stack: 'Flutter · .NET · Visa VTS · Cybersource · PostgreSQL', metric: 'PCI-safe', metricLabel: 'raw card data kept out of the platform' },
       { no: '03', where: 'PAYZLI', title: 'Clean Architecture / DDD migration', problem: 'A growing codebase where a change in one place broke something two modules away.', approach: 'Moved the platform to Clean Architecture with domain-driven boundaries, incrementally, without a rewrite freeze. Domain logic isolated from frameworks; tests now sit where the risk is.', stack: 'Flutter · .NET · Clean Architecture · DDD · Docker', metric: '−40%', metricLabel: 'production bugs after migration' },
       { no: '04', where: 'PAYZLI', title: 'Self-service appointments & wireless terminal pairing', problem: 'Customers had no way to manage their own bookings, and payment terminals needed manual setup for every device.', approach: 'Built customer self-service rescheduling and cancellation workflows that auto-calculate cancellation fees and process refunds per business policy. Implemented wireless payment terminal integration between IMIN POS devices and PAX terminals over socket communication, with automatic terminal discovery and one-click device pairing.', stack: 'Flutter · .NET · Socket communication · IMIN POS · PAX terminals', metric: '1-click', metricLabel: 'terminal pairing, no manual setup' }
@@ -331,6 +336,7 @@ class Component extends DCLogic {
     const projects = projData.map((p, i) => {
       const t = s.tilts[i];
       return { ...p,
+        hasLink: !!p.link, noLink: !p.link,
         transform: t ? `rotateX(${t.rx}deg) rotateY(${t.ry}deg) translateZ(14px)` : 'rotateX(0deg) rotateY(0deg) translateZ(0)',
         shadow: t ? `${-t.ry * 1.5}px ${t.rx * 1.5 + 18}px 40px rgba(23,32,30,0.18)` : '0 0 0 rgba(0,0,0,0)',
         onMove: (e) => { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; const b = e.currentTarget.getBoundingClientRect(); const x = (e.clientX - b.left) / b.width - 0.5, y = (e.clientY - b.top) / b.height - 0.5; this.setState(st => ({ tilts: { ...st.tilts, [i]: { rx: -y * 10, ry: x * 12 } } })); },
@@ -367,7 +373,7 @@ class Component extends DCLogic {
     return {
       irisOverlay, grainOn: this.props.filmGrain ?? true, railOn: s.wide && (this.props.scrollRail ?? true),
       h1o: heroA.o, h1t: heroA.t, h2o: heroA.o, h2t: on ? 'translateY(0)' : 'translateY(28px)', h3o: heroA.o, h3t: heroA.t, h4o: heroA.o, carReveal: on ? '130%' : '0%', speedT: on ? 'translateX(0)' : 'translateX(-40px)',
-      cols: s.narrow ? '1fr' : '160px minmax(0,1fr)',
+      cols: s.narrow ? 'minmax(0,1fr)' : '160px minmax(0,1fr)',
       nameWrap: this.nameWrap, nameEl: this.nameEl, nameSize: s.nameSize ? `${s.nameSize}px` : 'clamp(40px,11vw,170px)',
       railPath: this.railPath, railOffset: 100 - pct, railDot: s.dot, progressPct: `${String(pct).padStart(3,'0')}%`,
       progressLabel: pct < 12 ? 'ENTRY 00' : pct < 28 ? 'ENTRY 01' : pct < 45 ? 'ENTRY 02' : pct < 62 ? 'ENTRY 03' : pct < 76 ? 'ENTRY 04' : pct < 90 ? 'ENTRY 05' : 'ENTRY 06',
