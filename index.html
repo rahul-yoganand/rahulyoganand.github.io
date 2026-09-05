@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#ECEEEA;color:#17201E;font-family:'Archivo',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+a{color:#2B5A9E;text-decoration:none}a:hover{color:#17201E;text-decoration:underline;text-underline-offset:3px}
+*{box-sizing:border-box}
+::selection{background:#2B5A9E;color:#ECEEEA}
+input,textarea,select,button{font:inherit}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+</helmet>
+<div style="position:relative;min-height:100vh;overflow-x:clip">
+{{ irisOverlay }}
+<sc-if value="{{ grainOn }}" hint-placeholder-val="{{ true }}">
+<div aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:40;opacity:0.07;mix-blend-mode:multiply;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E&quot;)"></div>
+</sc-if>
+
+<!-- scroll rail -->
+<sc-if value="{{ railOn }}" hint-placeholder-val="{{ false }}">
+<aside aria-hidden="true" style="position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:30;width:64px;display:flex;flex-direction:column;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#55605C;letter-spacing:0.08em">
+  <div style="writing-mode:vertical-rl;transform:rotate(180deg)">LOG · {{ progressLabel }}</div>
+  <svg width="56" height="360" viewBox="0 0 56 360" style="overflow:visible">
+    <line x1="28" y1="0" x2="28" y2="360" stroke="#C9CEC8" stroke-width="1" stroke-dasharray="2 4"></line>
+    <path ref="{{ railPath }}" d="M28 0 L28 40 L16 70 L40 110 L22 150 L44 190 L18 230 L38 270 L26 310 L28 360" fill="none" stroke="#2B5A9E" stroke-width="1.5" pathLength="100" stroke-dasharray="100" stroke-dashoffset="{{ railOffset }}" stroke-linejoin="round"></path>
+    <circle cx="{{ railDot.x }}" cy="{{ railDot.y }}" r="4" fill="#ECEEEA" stroke="#2B5A9E" stroke-width="2"></circle>
+  </svg>
+  <div style="font-weight:500;color:#17201E">{{ progressPct }}</div>
+</aside>
+</sc-if>
+
+<!-- nav -->
+<header style="position:sticky;top:0;z-index:20;background:rgba(236,238,234,0.86);backdrop-filter:blur(8px);border-bottom:1px solid #C9CEC8">
+  <nav style="max-width:1180px;margin:0 auto;padding:14px clamp(16px,4vw,40px);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+    <a href="#top" style="display:flex;align-items:center;gap:10px;color:#17201E;text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.06em">
+      <span onClick="{{ onLogoClick }}" title="{{ logoTitle }}" style="width:22px;height:22px;border-radius:50%;border:2px solid #17201E;display:grid;place-items:center;cursor:pointer;background:conic-gradient(from 0deg,#17201E 0 12.5%,transparent 12.5% 25%,#17201E 25% 37.5%,transparent 37.5% 50%,#17201E 50% 62.5%,transparent 62.5% 75%,#17201E 75% 87.5%,transparent 87.5%);-webkit-mask:radial-gradient(circle,transparent 35%,#000 36%);mask:radial-gradient(circle,transparent 35%,#000 36%)"></span>
+      <span>Rahul Yoganand · FIELD JOURNAL</span>
+    </a>
+    <div style="display:flex;gap:clamp(12px,2.5vw,28px);flex-wrap:wrap;font-size:14px;font-weight:500">
+      <a href="#about" style="color:#17201E" style-focus="outline:2px solid #2B5A9E;outline-offset:3px">About</a>
+      <a href="#work" style="color:#17201E" style-focus="outline:2px solid #2B5A9E;outline-offset:3px">Work</a>
+      <a href="#projects" style="color:#17201E" style-focus="outline:2px solid #2B5A9E;outline-offset:3px">Projects</a>
+      <a href="#skills" style="color:#17201E" style-focus="outline:2px solid #2B5A9E;outline-offset:3px">Skills</a>
+      <a href="#field" style="color:#17201E" style-focus="outline:2px solid #2B5A9E;outline-offset:3px">Off-duty</a>
+      <a href="#contact" style="color:#2B5A9E;font-weight:600" style-focus="outline:2px solid #2B5A9E;outline-offset:3px">Contact</a>
+    </div>
+  </nav>
+</header>
+
+<main id="top" style="max-width:1180px;margin:0 auto;padding:0 clamp(16px,4vw,40px)">
+
+<!-- HERO -->
+<section data-screen-label="Hero" style="min-height:calc(100vh - 60px);display:grid;grid-template-rows:1fr auto;padding:clamp(48px,8vh,96px) 0 32px">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:32px 48px;align-items:end">
+    <div style="grid-column:1/-1">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#55605C;display:flex;gap:18px;flex-wrap:wrap;transition:opacity .7s ease,transform .7s ease;opacity:{{ h1o }};transform:{{ h1t }}">
+        <span>ENTRY 00</span><span>SENIOR SOFTWARE ENGINEER</span><span>FLUTTER · FINTECH BACKEND</span><span style="color:#2B5A9E;font-weight:500">● AVAILABLE FOR WORK</span>
+      </div>
+      <figure aria-label="Line-art silhouette of a Porsche 911 GT3 RS" style="margin:28px 0 0;position:relative;transition:opacity .6s ease .2s;opacity:{{ h3o }}">
+        <div style="position:relative;width:100%;aspect-ratio:701/180">
+          <img src="assets/gt3rs-line.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;-webkit-mask:linear-gradient(90deg,#000 0 calc({{ carReveal }} - 14%),transparent {{ carReveal }});mask:linear-gradient(90deg,#000 0 calc({{ carReveal }} - 14%),transparent {{ carReveal }});transition:-webkit-mask 2.2s cubic-bezier(.3,0,.2,1) .3s,mask 2.2s cubic-bezier(.3,0,.2,1) .3s">
+          <div aria-hidden="true" style="position:absolute;top:58%;left:100%;margin-left:2%;width:7%;display:grid;gap:12px;transition:opacity .5s ease 2.2s,transform .8s cubic-bezier(.2,.8,.2,1) 2.2s;opacity:{{ h4o }};transform:{{ speedT }}"><span style="height:4px;background:#2B5A9E;width:100%"></span><span style="height:4px;background:#2B5A9E;width:70%"></span><span style="height:4px;background:#2B5A9E;width:85%"></span></div>
+        </div>
+        
+      </figure>
+      <div ref="{{ nameWrap }}" style="width:100%;margin:20px 0 0;overflow:visible"><h1 ref="{{ nameEl }}" style="display:inline-block;white-space:nowrap;font-size:{{ nameSize }};line-height:0.9;letter-spacing:-0.04em;font-weight:800;font-stretch:88%;margin:0;transition:opacity .8s ease .1s,transform .8s cubic-bezier(.2,.8,.2,1) .1s;opacity:{{ h2o }};transform:{{ h2t }}">Rahul Yoganand<span style="color:#2B5A9E">.</span></h1></div>
+    </div>
+    <p style="font-size:clamp(19px,2.1vw,26px);line-height:1.35;margin:0;max-width:34ch;text-wrap:pretty;transition:opacity .8s ease .3s,transform .8s ease .3s;opacity:{{ h3o }};transform:{{ h3t }}">I build payment systems that don't drop transactions and mobile apps that don't drop frames. Five years in fintech, mechanical engineer by training.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-self:start;transition:opacity .8s ease .45s,transform .8s ease .45s;opacity:{{ h3o }};transform:{{ h3t }}">
+      <a href="#contact" style="background:#17201E;color:#ECEEEA;padding:14px 22px;font-weight:600;font-size:15px;border-radius:2px;text-decoration:none" style-hover="background:#2B5A9E;color:#ECEEEA;text-decoration:none" style-focus="outline:2px solid #2B5A9E;outline-offset:3px">Get in touch</a>
+      <a href="#about" style="color:#17201E;padding:14px 18px;font-weight:600;font-size:15px;border:1px solid #17201E;border-radius:2px;text-decoration:none" style-hover="background:#E2E5E0;text-decoration:none" style-focus="outline:2px solid #2B5A9E;outline-offset:3px">Read the log</a>
+    </div>
+  </div>
+  <div style="margin-top:56px;border-top:1px solid #17201E;border-bottom:1px solid #C9CEC8;padding:10px 0;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.06em;color:#55605C;transition:opacity .8s ease .6s;opacity:{{ h3o }}">
+    <span>EXP <b style="color:#17201E;font-weight:500">5 YRS</b></span>
+    <span>NOW <b style="color:#17201E;font-weight:500">PAYZLI</b></span>
+    <span>PREV <b style="color:#17201E;font-weight:500">FREO / MONEYTAP</b></span>
+    <span>EDU <b style="color:#17201E;font-weight:500">IIT BHUBANESWAR</b></span>
+    <span title="{{ exifTitle }}" style="cursor:help">REDLINE 9,000 RPM</span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" data-screen-label="About" style="padding:clamp(64px,10vh,120px) 0;border-top:1px solid #C9CEC8;display:grid;grid-template-columns:{{ cols }};gap:24px 48px">
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#55605C;line-height:1.8"><div>ENTRY 01</div><div>ORIGINS</div><div style="margin-top:8px;color:#C9CEC8">— — — —</div></div>
+  <div style="max-width:68ch">
+    <h2 style="font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-0.025em;font-weight:700;margin:0 0 28px;text-wrap:balance">Mechanical engineer by degree, software engineer by trade.</h2>
+    <div style="font-size:18px;line-height:1.6;color:#2A3431;display:grid;gap:18px;text-wrap:pretty">
+      <p style="margin:0">I studied mechanical engineering at IIT Bhubaneswar, then went into software. Five years so far, all of it in fintech — lending at Freo (formerly MoneyTap), payments at Payzli. Flutter on the front, .NET and Spring Boot behind it.</p>
+      <p style="margin:0">Outside work: mountains, beaches, cars, and a camera. The gallery below is where that lives.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="work" data-screen-label="Experience" style="padding:clamp(64px,10vh,120px) 0;border-top:1px solid #C9CEC8;display:grid;grid-template-columns:{{ cols }};gap:24px 48px">
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#55605C;line-height:1.8"><div>ENTRY 02</div><div>SERVICE RECORD</div><div style="margin-top:8px;color:#C9CEC8">— — — —</div></div>
+  <div>
+    <h2 style="font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-0.025em;font-weight:700;margin:0 0 40px">Three roles, one direction.</h2>
+    <ol style="list-style:none;margin:0;padding:0;border-top:1px solid #17201E">
+      <sc-for list="{{ roles }}" as="r" hint-placeholder-count="3">
+        <li style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px 32px;padding:28px 0;border-bottom:1px solid #C9CEC8">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#55605C;line-height:1.7"><div style="color:#2B5A9E;font-weight:500">{{ r.dates }}</div><div>{{ r.company }}</div></div>
+          <div style="grid-column:span 2">
+            <h3 style="font-size:22px;font-weight:600;margin:0 0 10px;letter-spacing:-0.01em">{{ r.title }}</h3>
+            <ul style="margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:16px;line-height:1.55;color:#2A3431">
+              <sc-for list="{{ r.points }}" as="pt" hint-placeholder-count="2"><li style="padding-left:18px;position:relative"><span style="position:absolute;left:0;top:0.65em;width:8px;height:1px;background:#17201E"></span>{{ pt }}</li></sc-for>
+            </ul>
+          </div>
+        </li>
+      </sc-for>
+    </ol>
+    <div style="margin-top:24px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#55605C;line-height:1.7"><span style="color:#2B5A9E;font-weight:500">2017 – 2021</span> &nbsp; B.Tech Mechanical Engineering, IIT Bhubaneswar</div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" data-screen-label="Projects" style="padding:clamp(64px,10vh,120px) 0;border-top:1px solid #C9CEC8">
+  <div style="display:grid;grid-template-columns:{{ cols }};gap:24px 48px;margin-bottom:40px">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#55605C;line-height:1.8"><div>ENTRY 03</div><div>CASE FILES</div><div style="margin-top:8px;color:#C9CEC8">— — — —</div></div>
+    <h2 style="font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-0.025em;font-weight:700;margin:0;max-width:24ch;text-wrap:balance">Problem, approach, what changed.</h2>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px;perspective:1400px">
+    <sc-for list="{{ projects }}" as="p" hint-placeholder-count="3">
+      <article onMouseMove="{{ p.onMove }}" onMouseLeave="{{ p.onLeave }}" tabindex="0" style="background:#F4F5F2;border:1px solid #17201E;border-radius:3px;padding:26px 24px 24px;display:flex;flex-direction:column;gap:18px;transform-style:preserve-3d;transition:transform .18s ease-out,box-shadow .3s ease;transform:{{ p.transform }};box-shadow:{{ p.shadow }};outline:none" style-focus="outline:2px solid #2B5A9E;outline-offset:3px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.06em;color:#55605C"><span>FILE {{ p.no }}</span><span>{{ p.where }}</span></div>
+        <h3 style="font-size:clamp(22px,2vw,26px);line-height:1.15;letter-spacing:-0.02em;font-weight:700;margin:0;text-wrap:balance">{{ p.title }}</h3>
+        <dl style="margin:0;display:grid;gap:14px;font-size:15px;line-height:1.5;color:#2A3431">
+          <div><dt style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;color:#55605C;margin-bottom:4px">PROBLEM</dt><dd style="margin:0">{{ p.problem }}</dd></div>
+          <div><dt style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;color:#55605C;margin-bottom:4px">APPROACH</dt><dd style="margin:0">{{ p.approach }}</dd></div>
+          <div><dt style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;color:#55605C;margin-bottom:4px">STACK</dt><dd style="margin:0;font-family:'IBM Plex Mono',monospace;font-size:13px">{{ p.stack }}</dd></div>
+        </dl>
+        <div style="margin-top:auto;padding-top:16px;border-top:1px solid #17201E;display:flex;align-items:baseline;gap:12px">
+          <span style="font-size:clamp(34px,3.2vw,44px);font-weight:700;letter-spacing:-0.03em;line-height:1;color:#2B5A9E">{{ p.metric }}</span>
+          <span style="font-size:14px;line-height:1.3;color:#2A3431">{{ p.metricLabel }}</span>
+        </div>
+      </article>
+    </sc-for>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" data-screen-label="Skills" style="padding:clamp(64px,10vh,120px) 0;border-top:1px solid #C9CEC8;display:grid;grid-template-columns:{{ cols }};gap:24px 48px">
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#55605C;line-height:1.8"><div>ENTRY 04</div><div>SPEC SHEET</div><div style="margin-top:8px;color:#C9CEC8">— — — —</div></div>
+  <div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:28px">
+      <h2 style="font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-0.025em;font-weight:700;margin:0">Fitted equipment.</h2>
+      <button type="button" onClick="{{ onLampClick }}" title="{{ lampTitle }}" aria-label="Diagnostic lamp" style="display:flex;align-items:center;gap:10px;background:transparent;border:1px solid #C9CEC8;border-radius:2px;padding:8px 12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;color:#55605C" style-hover="border-color:#17201E" style-focus="outline:2px solid #2B5A9E;outline-offset:3px">
+        <span style="width:12px;height:12px;border-radius:50%;background:{{ lampColor }};box-shadow:0 0 0 3px {{ lampGlow }};transition:background .4s,box-shadow .4s"></span>
+        <span>{{ lampText }}</span>
+      </button>
+    </div>
+    <table style="width:100%;border-collapse:collapse;border-top:2px solid #17201E;font-size:15px">
+      <tbody>
+      <sc-for list="{{ skillGroups }}" as="g" hint-placeholder-count="5">
+        <tr style="border-bottom:1px solid #C9CEC8;vertical-align:top">
+          <th scope="row" style="text-align:left;padding:16px 16px 16px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;font-weight:500;color:#55605C;white-space:nowrap;width:1%">{{ g.code }}<br><span style="color:#17201E">{{ g.name }}</span></th>
+          <td style="padding:16px 0">
+            <div style="display:flex;flex-wrap:wrap;gap:8px 6px">
+              <sc-for list="{{ g.items }}" as="s" hint-placeholder-count="4"><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;padding:5px 9px;border:1px solid #17201E;border-radius:2px;background:#F4F5F2" style-hover="background:#17201E;color:#ECEEEA">{{ s }}</span></sc-for>
+            </div>
+          </td>
+        </tr>
+      </sc-for>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FIELD / HOBBIES -->
+<section id="field" data-screen-label="Off-duty" style="padding:clamp(64px,10vh,120px) 0;border-top:1px solid #C9CEC8">
+  <div style="display:grid;grid-template-columns:{{ cols }};gap:24px 48px;margin-bottom:40px">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#55605C;line-height:1.8"><div>ENTRY 05</div><div>CONTACT SHEET</div><div style="margin-top:8px;color:#C9CEC8">— — — —</div></div>
+    <div style="max-width:60ch">
+      <h2 style="font-size:clamp(30px,4vw,46px);line-height:1.08;letter-spacing:-0.025em;font-weight:700;margin:0 0 16px">Off-duty.</h2>
+      <p style="font-size:17px;line-height:1.55;color:#2A3431;margin:0;text-wrap:pretty">Three rolls: mountains, beaches, cars — Porsche, Ferrari, the BMW headlights everyone photographs. Frames are placeholders until real shots go in.</p>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:20px;margin-bottom:20px">
+    <figure style="margin:0;border:1px solid #17201E;border-radius:3px;padding:18px 18px 14px;background:#F4F5F2;display:grid;gap:12px">
+      <svg viewBox="0 0 240 120" style="width:100%;height:auto;display:block" fill="none" stroke="#17201E" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <circle cx="196" cy="30" r="11" stroke="#2B5A9E"></circle>
+        <g stroke="#C9CEC8" stroke-width="1"><path d="M0 84 C40 76 80 92 120 80 S200 70 240 82"></path><path d="M0 96 C40 88 80 104 120 92 S200 82 240 94"></path></g>
+        <path d="M0 92 L42 48 L70 70 L110 26 L150 64 L184 40 L240 90" stroke="#8E9994"></path>
+        <path d="M102 34 L110 26 L118 34 M36 54 L42 48 L48 54" stroke="#2B5A9E"></path>
+        <path d="M0 112 L60 78 L100 100 L142 80 L200 106 L240 96" stroke-width="2"></path>
+        <line x1="0" y1="112" x2="240" y2="112"></line>
+      </svg>
+      <figcaption style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;color:#55605C;display:flex;justify-content:space-between"><span>ROLL 01 · MOUNTAINS</span><span>FR 01–02</span></figcaption>
+    </figure>
+    <figure style="margin:0;border:1px solid #17201E;border-radius:3px;padding:18px 18px 14px;background:#F4F5F2;display:grid;gap:12px">
+      <svg viewBox="0 0 240 120" style="width:100%;height:auto;display:block" fill="none" stroke="#17201E" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M168 56 A22 22 0 0 1 212 56" stroke="#2B5A9E"></path>
+        <line x1="0" y1="56" x2="240" y2="56" stroke-width="2"></line>
+        <path d="M0 74 Q15 66 30 74 T60 74 T90 74 T120 74 T150 74 T180 74 T210 74 T240 74" stroke="#8E9994"></path>
+        <path d="M0 90 Q15 82 30 90 T60 90 T90 90 T120 90 T150 90 T180 90 T210 90 T240 90"></path>
+        <path d="M0 106 Q15 98 30 106 T60 106 T90 106 T120 106 T150 106 T180 106 T210 106 T240 106" stroke="#2B5A9E"></path>
+        <path d="M18 56 C22 42 34 36 44 40 M18 56 C14 42 4 38 -2 42 M18 56 L18 30" stroke="#8E9994"></path>
+      </svg>
+      <figcaption style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;color:#55605C;display:flex;justify-content:space-between"><span>ROLL 02 · BEACHES</span><span>FR 03–04</span></figcaption>
+    </figure>
+    <figure style="margin:0;border:1px solid #17201E;border-radius:3px;padding:18px 18px 14px;background:#F4F5F2;display:grid;gap:12px">
+      <svg viewBox="0 0 240 120" style="width:100%;height:auto;display:block" fill="none" stroke="#17201E" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+        <line x1="0" y1="96" x2="240" y2="96" stroke="#C9CEC8" stroke-dasharray="3 5"></line>
+        <path d="M10 90 C8 84 8 78 12 72 C18 62 30 56 46 54 C56 40 70 34 82 34 L100 34 C110 36 118 44 128 52 C134 54 138 58 140 62 C142 68 142 80 140 90 Z" fill="#ECEEEA" stroke-width="2"></path>
+        <path d="M60 56 L80 40 L100 40 C106 42 112 48 116 56 Z" fill="#E2E5E0"></path>
+        <path d="M128 52 C128 48 130 42 134 38 M116 56 L120 40" stroke-width="1.8"></path>
+        <path d="M104 40 L142 36 L142 42 L104 46 Z" fill="#ECEEEA"></path>
+        <circle cx="38" cy="90" r="11" fill="#ECEEEA"></circle><circle cx="116" cy="90" r="11" fill="#ECEEEA"></circle><circle cx="116" cy="90" r="5" stroke="#2B5A9E"></circle>
+        <path d="M150 90 L156 74 L200 62 L232 60 L236 90 Z" fill="#ECEEEA" stroke-width="2"></path>
+        <path d="M158 72 L196 66" stroke="#2B5A9E"></path>
+        <circle cx="170" cy="90" r="8" fill="#ECEEEA"></circle><circle cx="222" cy="90" r="8" fill="#ECEEEA"></circle>
+        <circle cx="176" cy="28" r="12" stroke="#2B5A9E" stroke-width="2.4"></circle><circle cx="206" cy="28" r="12" stroke="#2B5A9E" stroke-width="2.4"></circle>
+        <path d="M160 40 L160 22 M222 40 L222 22" stroke="#8E9994"></path>
+      </svg>
+      <figcaption style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;color:#55605C;display:flex;justify-content:space-between"><span>ROLL 03 · CARS — 911 · FERRARI · BMW EYES</span><span>FR 05–06</span></figcaption>
+    </figure>
+  </div>
+  <div onMouseLeave="{{ onSheetLeave }}" style="background:#17201E;padding:clamp(14px,2vw,28px);border-radius:3px;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:clamp(10px,1.5vw,18px)">
+    <sc-for list="{{ frames }}" as="f" hint-placeholder-count="6">
+      <figure onMouseEnter="{{ f.onEnter }}" tabindex="0" style="margin:0;display:flex;flex-direction:column;gap:8px;transition:filter .35s ease,transform .35s ease,opacity .35s ease;filter:{{ f.filter }};transform:{{ f.transform }};opacity:{{ f.opacity }};outline:none" style-focus="outline:2px solid #ECEEEA;outline-offset:3px">
+        <div style="aspect-ratio:3/2;border:1px solid #3C4744;background:repeating-linear-gradient(135deg,#232D2B 0 8px,#1C2624 8px 16px);display:grid;place-items:center;text-align:center;padding:12px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#8E9994;line-height:1.5"><span style="white-space:nowrap">[ {{ f.slot }} ]</span><br>drop photo</span>
+        </div>
+        <figcaption style="display:flex;justify-content:space-between;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.06em;color:#8E9994"><span>{{ f.no }}</span><span>{{ f.tag }}</span></figcaption>
+      </figure>
+    </sc-for>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" data-screen-label="Contact" style="padding:clamp(64px,10vh,120px) 0 48px;border-top:1px solid #17201E;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:40px 64px">
+  <div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#55605C;margin-bottom:20px">ENTRY 06 · OPEN CHANNEL</div>
+    <h2 style="font-size:clamp(34px,4.6vw,56px);line-height:1.02;letter-spacing:-0.03em;font-weight:700;margin:0 0 24px;text-wrap:balance">Taking on work.</h2>
+    <ul style="list-style:none;margin:0 0 32px;padding:0;display:grid;gap:14px;font-size:17px;line-height:1.5;color:#2A3431">
+      <li style="display:grid;grid-template-columns:auto 1fr;gap:14px"><span style="font-family:'IBM Plex Mono',monospace;color:#2B5A9E;font-size:13px;padding-top:4px">01</span><span><b style="color:#17201E">Contract &amp; freelance</b> — Flutter apps and payment integrations, scoped and shipped.</span></li>
+      <li style="display:grid;grid-template-columns:auto 1fr;gap:14px"><span style="font-family:'IBM Plex Mono',monospace;color:#2B5A9E;font-size:13px;padding-top:4px">02</span><span><b style="color:#17201E">Full-time roles</b> — senior mobile or backend engineering in fintech.</span></li>
+      <li style="display:grid;grid-template-columns:auto 1fr;gap:14px"><span style="font-family:'IBM Plex Mono',monospace;color:#2B5A9E;font-size:13px;padding-top:4px">03</span><span><b style="color:#17201E">Consulting &amp; debugging</b> — a second pair of eyes on architecture, or the bug nobody can reproduce.</span></li>
+    </ul>
+    <div style="display:flex;flex-direction:column;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:14px">
+      <a href="mailto:pry10@iitbbs.ac.in" title="Subspace channel — replies in under 48 Earth hours" style="display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #C9CEC8;color:#17201E" style-hover="color:#2B5A9E;text-decoration:none" style-focus="outline:2px solid #2B5A9E;outline-offset:3px"><span style="color:#55605C">EMAIL</span><span>pry10@iitbbs.ac.in</span></a>
+      <a href="https://linkedin.com/in/rahul-yoganand" target="_blank" rel="noopener" title="Where the corporate holonet keeps my dossier" style="display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #C9CEC8;color:#17201E" style-hover="color:#2B5A9E;text-decoration:none" style-focus="outline:2px solid #2B5A9E;outline-offset:3px"><span style="color:#55605C">LINKEDIN</span><span>/in/rahul-yoganand</span></a>
+      <a href="https://github.com/rahul-yoganand" target="_blank" rel="noopener" title="Repository of forbidden knowledge (and unfinished side projects)" style="display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #C9CEC8;color:#17201E" style-hover="color:#2B5A9E;text-decoration:none" style-focus="outline:2px solid #2B5A9E;outline-offset:3px"><span style="color:#55605C">GITHUB</span><span>/rahul-yoganand</span></a>
+    </div>
+  </div>
+  <form onSubmit="{{ onSubmit }}" style="background:#F4F5F2;border:1px solid #17201E;border-radius:3px;padding:clamp(20px,3vw,32px);display:grid;gap:18px;align-self:start">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#55605C;display:flex;justify-content:space-between"><span>DISPATCH FORM</span><span>opens your mail client</span></div>
+    <label style="display:grid;gap:6px;font-size:13px;font-weight:600"><span>Name</span><input name="name" required value="{{ form.name }}" onChange="{{ onField }}" style="padding:12px;border:1px solid #17201E;border-radius:2px;background:#ECEEEA;font-size:15px;outline:none" style-focus="outline:2px solid #2B5A9E;outline-offset:2px"></label>
+    <label style="display:grid;gap:6px;font-size:13px;font-weight:600"><span>Email</span><input name="email" type="email" required value="{{ form.email }}" onChange="{{ onField }}" style="padding:12px;border:1px solid #17201E;border-radius:2px;background:#ECEEEA;font-size:15px;outline:none" style-focus="outline:2px solid #2B5A9E;outline-offset:2px"></label>
+    <label style="display:grid;gap:6px;font-size:13px;font-weight:600"><span>Reason</span><select name="reason" value="{{ form.reason }}" onChange="{{ onField }}" style="padding:12px;border:1px solid #17201E;border-radius:2px;background:#ECEEEA;font-size:15px;outline:none" style-focus="outline:2px solid #2B5A9E;outline-offset:2px"><option value="Hiring">Hiring (full-time)</option><option value="Contract">Contract / freelance</option><option value="Consulting">Consulting / debugging</option></select></label>
+    <label style="display:grid;gap:6px;font-size:13px;font-weight:600"><span>Message</span><textarea name="message" required rows="5" value="{{ form.message }}" onChange="{{ onField }}" style="padding:12px;border:1px solid #17201E;border-radius:2px;background:#ECEEEA;font-size:15px;resize:vertical;outline:none;font-family:inherit" style-focus="outline:2px solid #2B5A9E;outline-offset:2px"></textarea></label>
+    <button type="submit" style="background:#17201E;color:#ECEEEA;padding:14px 22px;font-weight:600;font-size:15px;border:0;border-radius:2px;cursor:pointer;justify-self:start" style-hover="background:#2B5A9E" style-focus="outline:2px solid #2B5A9E;outline-offset:3px">Send dispatch</button>
+  </form>
+</section>
+
+<footer style="padding:24px 0 40px;border-top:1px solid #C9CEC8;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#55605C">
+  <span>© 2026 RAHUL YOGANAND</span>
+  <span>{{ footerNote }}</span>
+</footer>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;heroAnimation&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;iris&quot;,&quot;none&quot;],&quot;default&quot;:&quot;iris&quot;,&quot;tsType&quot;:&quot;'iris'|'none'&quot;,&quot;section&quot;:&quot;Motion&quot;},&quot;irisDuration&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1400,&quot;min&quot;:600,&quot;max&quot;:3000,&quot;step&quot;:100,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Motion&quot;},&quot;filmGrain&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Texture&quot;},&quot;scrollRail&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Navigation&quot;}}">
+class Component extends DCLogic {
+  state = { iris: 0, irisDone: false, hero: 0, progress: 0, dot: {x:28,y:0}, narrow: false, tilts: {}, hoverFrame: -1, lamp: 0, logoClicks: 0, form: {name:'',email:'',reason:'Hiring',message:''} };
+  railPath = React.createRef(); nameWrap = React.createRef(); nameEl = React.createRef();
+  componentDidMount() {
+    console.log('%c▲ FIELD JOURNAL v1.0', 'font:bold 14px monospace;color:#2B5A9E');
+    console.log('%cYou opened the console. Good instinct. Fun fact: this site has no phone number on purpose — comms are text-only, like any well-run bridge.\nTry clicking the aperture logo a few times.', 'font:12px monospace;color:#55605C');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const animOn = (this.props.heroAnimation ?? 'iris') !== 'none' && !reduced;
+    if (!animOn) { this.setState({ iris: 1, irisDone: true, hero: 3 }); }
+    else {
+      const dur = (this.props.irisDuration ?? 1400);
+      const t0 = performance.now() + 350;
+      const step = (now) => {
+        const t = Math.min(1, Math.max(0, (now - t0) / dur));
+        const e = t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
+        this.setState({ iris: e, hero: t > 0.35 ? 3 : 0 });
+        if (t < 1) requestAnimationFrame(step); else setTimeout(() => this.setState({ irisDone: true }), 200);
+      };
+      requestAnimationFrame(step);
+    }
+    this._onScroll = () => {
+      const d = document.documentElement;
+      const max = d.scrollHeight - window.innerHeight;
+      const p = max > 0 ? Math.min(1, Math.max(0, d.scrollTop / max)) : 0;
+      let dot = this.state.dot;
+      const path = this.railPath.current;
+      if (path && path.getTotalLength) { const pt = path.getPointAtLength(path.getTotalLength() * p); dot = { x: pt.x, y: pt.y }; }
+      this.setState({ progress: p, dot });
+    };
+    this._fitName = () => {
+      const w = this.nameWrap.current, el = this.nameEl.current;
+      if (!w || !el) return;
+      const prev = el.style.fontSize; el.style.fontSize = '100px';
+      const ratio = w.clientWidth / el.getBoundingClientRect().width;
+      el.style.fontSize = prev;
+      const size = Math.max(28, Math.floor(100 * ratio * 100) / 100);
+      if (Math.abs(size - (this.state.nameSize || 0)) > 0.5) this.setState({ nameSize: size });
+    };
+    this._onResize = () => { this.setState({ narrow: window.innerWidth < 760, wide: window.innerWidth >= 1340 }); this._fitName(); };
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => this._fitName());
+    setTimeout(() => this._fitName(), 600);
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+    window.addEventListener('resize', this._onResize);
+    this._onResize(); this._onScroll();
+  }
+  componentWillUnmount() { window.removeEventListener('scroll', this._onScroll); window.removeEventListener('resize', this._onResize); }
+  renderVals() {
+    const s = this.state;
+    const ink = '#17201E';
+    let irisOverlay = null;
+    if (!s.irisDone) {
+      const r = s.iris * 90;
+      const blades = 8, segs = [];
+      for (let i = 0; i < blades; i++) { const a = i * 360 / blades; segs.push(`${ink} ${a}deg ${a + 360/blades - 1.2}deg, #2B5A9E ${a + 360/blades - 1.2}deg ${a + 360/blades}deg`); }
+      irisOverlay = React.createElement('div', { 'aria-hidden': true, key: 'iris', style: {
+        position: 'fixed', inset: 0, zIndex: 60, pointerEvents: s.iris > 0.9 ? 'none' : 'auto',
+        background: `conic-gradient(from ${ -s.iris * 45 }deg, ${segs.join(',')})`,
+        WebkitMask: `radial-gradient(circle at 50% 50%, transparent ${r}vmax, #000 calc(${r}vmax + 1px))`,
+        mask: `radial-gradient(circle at 50% 50%, transparent ${r}vmax, #000 calc(${r}vmax + 1px))`,
+        opacity: s.iris > 0.95 ? (1 - (s.iris - 0.95) / 0.05) : 1
+      }});
+    }
+    const on = s.hero >= 3;
+    const heroA = { o: on ? 1 : 0, t: on ? 'translateY(0)' : 'translateY(18px)' };
+    const roles = [
+      { dates: 'Apr 2023 — present', company: 'Payzli', title: 'Senior Software Engineer', points: [
+        'Building a multi-tenant SaaS POS and CRM platform for merchants — Flutter clients, .NET services.',
+        'Implemented secure card tokenization with Visa Token Management System and the Cybersource SDK.',
+        'Led migration to Clean Architecture / DDD; production bugs down roughly 40%.' ] },
+      { dates: 'Jul 2021 — Mar 2023', company: 'Freo (formerly MoneyTap)', title: 'Software Engineer', points: [
+        'Revamped the payment flow end to end; customer usage and transactions up 60%.',
+        'Flutter app work with Bloc/GetX, Spring Boot services, PostgreSQL and Redis behind them.' ] },
+      { dates: 'Apr — Jul 2020', company: 'Chamber of Products', title: 'Android Developer Intern', points: [
+        'First production Android work, in Kotlin. Learned what "it works on my device" costs.' ] }
+    ];
+    const projData = [
+      { no: '01', where: 'PAYZLI', title: 'Card tokenization that keeps PANs out of the building', problem: 'Storing and reusing customer cards on a multi-tenant platform without ever holding raw card data.', approach: 'Integrated Visa Token Management System with the Cybersource SDK; tokens issued at capture, raw PAN never touches our stores. Boundaries drawn with DDD so the payment context is isolated from everything else.', stack: 'Flutter · .NET · Visa VTS · Cybersource · PostgreSQL', metric: 'PCI-safe', metricLabel: 'raw card data kept out of the platform' },
+      { no: '02', where: 'FREO / MONEYTAP', title: 'Payment flow revamp', problem: 'A payment journey with too many screens and too many places to fall off.', approach: 'Rebuilt the flow in Flutter with a Bloc state model, cut redundant steps, and made failure states recoverable instead of dead ends. Backend endpoints reshaped in Spring Boot to match.', stack: 'Flutter · Bloc · Spring Boot · Redis · PostgreSQL', metric: '+60%', metricLabel: 'customer usage and transactions' },
+      { no: '03', where: 'PAYZLI', title: 'Clean Architecture / DDD migration', problem: 'A growing codebase where a change in one place broke something two modules away.', approach: 'Moved the platform to Clean Architecture with domain-driven boundaries, incrementally, without a rewrite freeze. Domain logic isolated from frameworks; tests now sit where the risk is.', stack: 'Flutter · .NET · Clean Architecture · DDD · Docker', metric: '−40%', metricLabel: 'production bugs after migration' }
+    ];
+    const projects = projData.map((p, i) => {
+      const t = s.tilts[i];
+      return { ...p,
+        transform: t ? `rotateX(${t.rx}deg) rotateY(${t.ry}deg) translateZ(14px)` : 'rotateX(0deg) rotateY(0deg) translateZ(0)',
+        shadow: t ? `${-t.ry * 1.5}px ${t.rx * 1.5 + 18}px 40px rgba(23,32,30,0.18)` : '0 0 0 rgba(0,0,0,0)',
+        onMove: (e) => { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; const b = e.currentTarget.getBoundingClientRect(); const x = (e.clientX - b.left) / b.width - 0.5, y = (e.clientY - b.top) / b.height - 0.5; this.setState(st => ({ tilts: { ...st.tilts, [i]: { rx: -y * 10, ry: x * 12 } } })); },
+        onLeave: () => this.setState(st => { const t2 = { ...st.tilts }; delete t2[i]; return { tilts: t2 }; })
+      };
+    });
+    const skillGroups = [
+      { code: 'A', name: 'Languages', items: ['Java','Dart','Kotlin','C#','SQL'] },
+      { code: 'B', name: 'Mobile', items: ['Flutter','Bloc','GetX','Firebase'] },
+      { code: 'C', name: 'Backend', items: ['.NET','Spring Boot','Kafka','Redis','Elasticsearch'] },
+      { code: 'D', name: 'Data & infra', items: ['PostgreSQL','MySQL','Docker','AWS'] },
+      { code: 'E', name: 'Architecture', items: ['Clean Architecture','DDD','Distributed Systems'] }
+    ];
+    const tags = [
+      ['MOUNTAINS','summit / ridge shot'], ['MOUNTAINS','trail / valley shot'],
+      ['BEACHES','shoreline shot'], ['BEACHES','sunset horizon shot'],
+      ['CARS','porsche shot'], ['CARS','ferrari / bmw shot']
+    ];
+    const frames = tags.map(([tag, slot], i) => {
+      const h = s.hoverFrame, active = h === i, dim = h >= 0 && !active;
+      return { no: `${String(i+1).padStart(2,'0')}A`, tag, slot,
+        filter: dim ? 'blur(1.5px) saturate(0.6)' : 'none', transform: active ? 'scale(1.04)' : 'scale(1)', opacity: dim ? 0.55 : 1,
+        onEnter: () => this.setState({ hoverFrame: i }) };
+    });
+    const lampStates = [
+      { color: '#D89A2B', glow: 'rgba(216,154,43,0.25)', text: 'CHECK ENGINE', title: 'Something is wrong. Or the sensor is. Click to run diagnostics.' },
+      { color: '#2B5A9E', glow: 'rgba(43,90,158,0.25)', text: 'RUNNING DIAGNOSTICS…', title: 'Reticulating splines.' },
+      { color: '#3E8E5A', glow: 'rgba(62,142,90,0.25)', text: '0 FAULTS · LAMP WAS BEING DRAMATIC', title: 'All systems nominal. Warp core at 100%.' }
+    ];
+    const lamp = lampStates[s.lamp];
+    const logoTitles = ['Aperture. Also a button, if you are the type.', 'Keep going.', 'Almost.', 'One more.', 'Achievement unlocked: you poke things. Good engineers do.'];
+    const pct = Math.round(s.progress * 100);
+    return {
+      irisOverlay, grainOn: this.props.filmGrain ?? true, railOn: s.wide && (this.props.scrollRail ?? true),
+      h1o: heroA.o, h1t: heroA.t, h2o: heroA.o, h2t: on ? 'translateY(0)' : 'translateY(28px)', h3o: heroA.o, h3t: heroA.t, h4o: heroA.o, carReveal: on ? '130%' : '0%', speedT: on ? 'translateX(0)' : 'translateX(-40px)',
+      cols: s.narrow ? '1fr' : '160px minmax(0,1fr)',
+      nameWrap: this.nameWrap, nameEl: this.nameEl, nameSize: s.nameSize ? `${s.nameSize}px` : 'clamp(40px,11vw,170px)',
+      railPath: this.railPath, railOffset: 100 - pct, railDot: s.dot, progressPct: `${String(pct).padStart(3,'0')}%`,
+      progressLabel: pct < 12 ? 'ENTRY 00' : pct < 28 ? 'ENTRY 01' : pct < 45 ? 'ENTRY 02' : pct < 62 ? 'ENTRY 03' : pct < 76 ? 'ENTRY 04' : pct < 90 ? 'ENTRY 05' : 'ENTRY 06',
+      exifTitle: "The car's redline, not mine. Mine is a bit lower.",
+      roles, projects, skillGroups, frames,
+      onSheetLeave: () => this.setState({ hoverFrame: -1 }),
+      lampColor: lamp.color, lampGlow: lamp.glow, lampText: lamp.text, lampTitle: lamp.title,
+      onLampClick: () => { if (s.lamp === 0) { this.setState({ lamp: 1 }); setTimeout(() => this.setState({ lamp: 2 }), 1400); } else if (s.lamp === 2) this.setState({ lamp: 0 }); },
+      onLogoClick: (e) => { e.preventDefault(); this.setState(st => ({ logoClicks: Math.min(4, st.logoClicks + 1) })); },
+      logoTitle: logoTitles[s.logoClicks],
+      footerNote: s.logoClicks >= 4 ? 'NO PHONE NUMBER. THE SPICE MUST FLOW THROUGH EMAIL.' : 'SET IN ARCHIVO & IBM PLEX MONO · NO TRACKERS',
+      form: s.form,
+      onField: (e) => { const { name, value } = e.target; this.setState(st => ({ form: { ...st.form, [name]: value } })); },
+      onSubmit: (e) => { e.preventDefault(); const f = s.form; const subject = encodeURIComponent(`[${f.reason}] ${f.name}`); const body = encodeURIComponent(`${f.message}\n\n— ${f.name} (${f.email})`); window.location.href = `mailto:pry10@iitbbs.ac.in?subject=${subject}&body=${body}`; }
+    };
+  }
+}
+</script>
+</body>
+</html>
